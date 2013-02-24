@@ -10,7 +10,7 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "bb.settings"
 from django_social.facebook import get_location_info
 from django_social.facebook import search_places
 from django.core.exceptions import ValidationError
-from mongoengine_geo.documents.embedded import LocationSource
+from mongo_geo.documents.embedded import LocationSource
 import unittest
 
 
