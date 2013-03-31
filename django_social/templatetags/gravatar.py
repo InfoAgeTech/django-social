@@ -8,10 +8,10 @@ Examples:
 """
 
 from django import template
-from django.utils.html import escape
-from django.contrib.auth.models import User
 from django.conf import settings
-from django.utils.hashcompat import md5_constructor
+from django.utils.html import escape
+
+import hashlib
 import urllib
 
 GRAVATAR_URL_PREFIX = getattr(settings, "GRAVATAR_URL_PREFIX", "http://www.gravatar.com/")
@@ -21,7 +21,7 @@ register = template.Library()
 
 
 def gravatar_for_email(email, size=32):
-    url = "%savatar/%s/?" % (GRAVATAR_URL_PREFIX, md5_constructor(email).hexdigest())
+    url = "%savatar/%s/?" % (GRAVATAR_URL_PREFIX, hashlib.md5(email).hexdigest())
     url += urllib.urlencode({"s": str(size), "default": GRAVATAR_DEFAULT_IMAGE})
     return escape(url)
 
