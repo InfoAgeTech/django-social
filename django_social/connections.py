@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import StringField
+from django.db import models
 
 
-class FacebookConnection(EmbeddedDocument):
+class FacebookConnection(models.Model):
     """
     Represents a facebook user connection.
     
@@ -11,15 +10,13 @@ class FacebookConnection(EmbeddedDocument):
         connection type, not bills and budget user id)
     :param name: name of the user connection (i.e. "John Doe")
     """
-    user_id = StringField(db_field='uid')
-    name = StringField(db_field='n')
-
+    user_id = models.CharField(max_length=50)
+    name = models.CharField(max_length=75)
 
     def __init__(self, user_id, name, *args, **kwargs):
         super(FacebookConnection, self).__init__(*args, **kwargs)
         self.user_id = user_id
         self.name = name
-
 
     def get_avatar_url(self):
         """
@@ -27,7 +24,6 @@ class FacebookConnection(EmbeddedDocument):
         
         """
         return self.get_profile_pic(pic_type='square')
-
 
     def get_profile_pic(self, pic_type='large'):
         """

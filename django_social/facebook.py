@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django_geo.models import Location
 from django_social.connections import FacebookConnection
-from mongo_geo.constants import LocationSource
-from mongo_geo.documents.embedded import Location
 from python_tools.api import get_json_api_contents
 from urllib2 import urlopen
 import urllib
