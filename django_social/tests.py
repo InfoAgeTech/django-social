@@ -4,13 +4,9 @@ Run from the command line.
 
 $ python manage.py test bb_social
 """
-import os
-os.environ["DJANGO_SETTINGS_MODULE"] = "bb.settings"
-
+from django.core.exceptions import ValidationError
 from django_social.facebook import get_location_info
 from django_social.facebook import search_places
-from django.core.exceptions import ValidationError
-from mongo_geo.documents.embedded import LocationSource
 import unittest
 
 
