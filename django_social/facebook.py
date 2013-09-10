@@ -92,7 +92,7 @@ def get_location_info(location_id):
     loc.latlong = (location.get('latitude'), location.get('longitude'))
     loc.category = location_info.get('category')
     loc.phone = location_info.get('phone')
-    loc.source = LocationSource.FACEBOOK
+    loc.source = 'FACEBOOK'
     return loc
 
 
@@ -182,7 +182,7 @@ def search_places(query=None, latitude=None, longitude=None, distance=None,
     if distance:
         query_params['distance'] = distance
 
-    api_url = 'https://graph.facebook.com/search?{0}'.format(urllib.urlencode(query_params))
+    api_url = u'https://graph.facebook.com/search?{0}'.format(urllib.urlencode(query_params))
 
     location_info = get_json_api_contents(api_url)
     places = location_info.get('data', [])
