@@ -6,14 +6,22 @@ from django_social.connections import FacebookConnection
 from python_tools.api import get_json_api_contents
 from urllib2 import urlopen
 import urllib
+from urlparse import urljoin
+
+DEFAULT_METADATA_FIELDS = ('gender', 'birthday', 'username', 'location',
+                           'significant_other', 'timezone', 'picture',
+                           'locale', 'currency')
 
 
 def get_friends(facebook_user_id, access_token):
     """
     Get a list of users friends
     """
-    friends_api_url = 'https://graph.facebook.com/{facebook_user_id}/friends?access_token={access_token}'.format(facebook_user_id=facebook_user_id,
-                                                                                                                     access_token=access_token)
+    params = {'access_token': access_token}
+    friends_api_url = urljoin('https://graph.facebook.com/',
+                              '{facebook_user_id}/friends?{params}'.format(
+                                            facebook_user_id=facebook_user_id,
+                                            params=urllib.urlencode(params)))
 
     connections = get_json_api_contents(friends_api_url)
     friend_list = connections.get('data', [])
@@ -27,22 +35,24 @@ def get_friends(facebook_user_id, access_token):
     return fb_connections
 
 
-DEFAULT_METADATA_FIELDS = ('gender', 'birthday', 'username', 'location', 'significant_other')
-
 def get_user_metadata(facebook_user_id, access_token, fields=DEFAULT_METADATA_FIELDS):
     """
     Gets metadata about a user.
-    
+
     Additional metadata about the user can be defined in the metadata fields. If
     you want all metadata fields returned, set "fields" param to be None.
-    
+
     @see: https://developers.facebook.com/docs/reference/api/
     """
+    params = {'access_token': access_token}
 
-    metadata_api_url = 'https://graph.facebook.com/{facebook_user_id}?access_token={access_token}'.format(facebook_user_id=facebook_user_id,
-                                                                                                          access_token=access_token)
     if fields:
-        metadata_api_url += '&fields={0}'.format(','.join(fields))
+        params['fields'] = u','.join(fields)
+
+    metadata_api_url = urljoin(u'https://graph.facebook.com/',
+                                '{facebook_user_id}?{params}'.format(
+                                            facebook_user_id=facebook_user_id,
+                                            params=urllib.urlencode(params)))
 
     user_metadata = get_json_api_contents(metadata_api_url)
     return user_metadata
@@ -50,10 +60,10 @@ def get_user_metadata(facebook_user_id, access_token, fields=DEFAULT_METADATA_FI
 
 def get_location_info(location_id):
     """
-    Gets location information by facebook location id.  
-    
+    Gets location information by facebook location id.
+
     Example facebook response:
-    
+
     {
         "id": "112213565457929",
         "name": "Overland Park, Kansas",
@@ -64,10 +74,10 @@ def get_location_info(location_id):
            "latitude": 38.9401,
            "longitude": -94.6807
     }
-    
-    Converted into an Address object.  
+
+    Converted into an Address object.
     :return: Address object or None if no location is found.
-    
+
     """
     if not location_id:
         return None
@@ -75,45 +85,55 @@ def get_location_info(location_id):
     query_params = {'fields': 'location,name,category,phone',
                     'access_token': get_app_access_token()}
 
-    location_api_url = 'https://graph.facebook.com/{location_id}?{query_params}'.format(location_id=location_id,
-                                                                                        query_params=urllib.urlencode(query_params))
+    location_api_url = urljoin(u'https://graph.facebook.com/',
+                               '{location_id}?{query_params}'.format(
+                                location_id=location_id,
+                                query_params=urllib.urlencode(query_params)))
+
     location_info = get_json_api_contents(location_api_url)
     location = location_info.get('location', {})
+
     if not location:
         return None
 
-    loc = Location()
-    loc.name = location_info.get('name')
-    loc.line1 = location.get('street')
-    loc.locality = location.get('city')
-    loc.subdivision = location.get('state')
-    loc.country = location.get('country')
-    loc.postal_code = location.get('zip')
-    loc.latlong = (location.get('latitude'), location.get('longitude'))
-    loc.category = location_info.get('category')
-    loc.phone = location_info.get('phone')
-    loc.source = 'FACEBOOK'
-    return loc
+    return Location.objects.get_or_create(
+        ext_id=location_info.get('id'),
+        source='FACEBOOK',
+        defaults={
+            'name': location_info.get('name'),
+            'line1': location.get('street'),
+            'locality': location.get('city'),
+            'subdivision': location.get('state'),
+            'country': location.get('country'),
+            'postal_code': location.get('zip'),
+            'latitude': location.get('latitude'),
+            'longitude': location.get('longitude'),
+            'category': location_info.get('category'),
+            'phone': location_info.get('phone'),
+            'ext_id': location_info.get('id'),
+            'source': 'FACEBOOK'
+        }
+    )[0]
 
 
 def search_places(query=None, latitude=None, longitude=None, distance=None,
                   page=1, page_size=25):
     """
-    Gets places nearby a latitude and longitude point.  One or more of the  
+    Gets places nearby a latitude and longitude point.  One or more of the
     following must be present or a ValidationError will be thrown:
-    
+
         - query
         - latitude and longitude
         - distance
-    
+
     :param query: query string to search for
     :param latitude: latitude of a point to search for.
     :param longitude: longitude of a point to search for.
-    :param distance: distance in feet to search for places from the latitude, 
+    :param distance: distance in feet to search for places from the latitude,
         longitude point.
-    
+
     Sample facebook response:
-    
+
     {
        "data": [
           {
