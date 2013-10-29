@@ -8,9 +8,9 @@ from urllib2 import urlopen
 import urllib
 from urlparse import urljoin
 
-DEFAULT_METADATA_FIELDS = ('gender', 'birthday', 'username', 'location',
-                           'significant_other', 'timezone', 'picture',
-                           'locale', 'currency')
+DEFAULT_METADATA_FIELDS = ('email', 'gender', 'birthday', 'username',
+                           'location', 'significant_other', 'timezone',
+                           'picture', 'locale', 'currency')
 
 
 def get_friends(facebook_user_id, access_token):
@@ -35,7 +35,7 @@ def get_friends(facebook_user_id, access_token):
     return fb_connections
 
 
-def get_user_metadata(facebook_user_id, access_token, fields=DEFAULT_METADATA_FIELDS):
+def get_user_metadata(facebook_user_id, access_token, fields=None):
     """
     Gets metadata about a user.
 
@@ -44,10 +44,11 @@ def get_user_metadata(facebook_user_id, access_token, fields=DEFAULT_METADATA_FI
 
     @see: https://developers.facebook.com/docs/reference/api/
     """
-    params = {'access_token': access_token}
+    if not fields:
+        fields = DEFAULT_METADATA_FIELDS
 
-    if fields:
-        params['fields'] = u','.join(fields)
+    params = {'access_token': access_token,
+              'fields': u','.join(fields)}
 
     metadata_api_url = urljoin(u'https://graph.facebook.com/',
                                 '{facebook_user_id}?{params}'.format(
