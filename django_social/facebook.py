@@ -13,9 +13,13 @@ DEFAULT_METADATA_FIELDS = ('email', 'gender', 'birthday', 'username',
                            'picture', 'locale', 'currency')
 
 
-def get_friends(facebook_user_id, access_token):
+def get_friends(facebook_user_id, access_token, datatype=None):
     """
-    Get a list of users friends
+    Get a list of users friends.
+
+    :param datatype: the format datatype to return.  If None, this will be
+        FacebookConnection objects.  If format == 'json', this will return
+        json.
     """
     params = {'access_token': access_token}
     friends_api_url = urljoin('https://graph.facebook.com/',
@@ -26,6 +30,10 @@ def get_friends(facebook_user_id, access_token):
     connections = get_json_api_contents(friends_api_url)
     friend_list = connections.get('data', [])
     friend_list.sort(key=lambda k: k.get('name'))
+
+    if datatype == 'json':
+        return friend_list
+
     fb_connections = []
 
     for friend in friend_list:
