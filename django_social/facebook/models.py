@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json
+from django_social.facebook.api import get_user_photo
 
 
 class FacebookConnection(object):
@@ -34,19 +34,4 @@ class FacebookConnection(object):
         Note: This url can be http or https.  Probably want to flex this based
         on if I'm using SSL or not.
         """
-        return 'http://graph.facebook.com/{facebook_user_id}/picture?type={pic_type}'.format(facebook_user_id=self.user_id,
-                                                                                             pic_type=pic_type)
-
-
-class FacebookConnectionEncoder(json.JSONEncoder):
-
-    def default(self, obj):
-        if not isinstance(obj, FacebookConnection):
-            return super(FacebookConnectionEncoder, self).default(obj)
-
-        return obj.__dict__
-
-
-def facebook_connection_decoder(obj):
-    return FacebookConnection(user_id=obj.get('user_id'),
-                              name=obj.get('name'))
+        return get_user_photo(facebook_user_id=self.user_id, pic_type=pic_type)

@@ -5,8 +5,9 @@ Run from the command line.
 $ python manage.py test bb_social
 """
 from django.core.exceptions import ValidationError
-from django_social.facebook import get_location_info
-from django_social.facebook import search_places
+from django_social import Source
+from django_social.facebook.api import get_location_info
+from django_social.facebook.api import search_places
 import unittest
 
 
@@ -27,9 +28,8 @@ class SocialTestCase(unittest.TestCase):
         self.assertEquals(location.locality, 'Kansas City')
         self.assertEquals(location.phone, '816-753-1840')
         self.assertEquals(location.postal_code, '64112')
-        self.assertEquals(location.source, LocationSource.FACEBOOK)
+        self.assertEquals(location.source, Source.FACEBOOK)
         self.assertEquals(location.subdivision, 'MO')
-
 
     def test_places_search(self):
         """
@@ -44,12 +44,8 @@ class SocialTestCase(unittest.TestCase):
         # I don't always get 6.
         places = search_places(query='coffee',
                                latitude=39.042173020445,
-                               longitude= -94.590903251913,
+                               longitude=-94.590903251913,
                                distance=1000,
                                page_size=6)
 
         self.assertTrue(len(places) > 1)
-
-
-if __name__ == '__main__':
-    unittest.main()

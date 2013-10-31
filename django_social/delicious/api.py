@@ -6,9 +6,9 @@ from python_tools.api import get_json_api_contents
 def get_bookmarks(delicious_username, tag=None):
     """
     Returns a list of recent bookmarks from delicious
-    
+
     @see http://feeds.delicious.com/v2/json/troygrosfield
-    
+
     Example bookmark:
     [
         {

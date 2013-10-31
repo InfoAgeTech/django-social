@@ -1,13 +1,20 @@
 # -*- coding: utf-8 -*-
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django_geo.models import Location
-from django_social.connections import FacebookConnection
+from django_social import Source
 from python_tools.api import get_json_api_contents
 from urllib2 import urlopen
-import urllib
 from urlparse import urljoin
+import urllib
 
+APP_ACCESS_TOKEN_API_URL = u'https://graph.facebook.com/oauth/access_token?{0}'
+FRIENDS_API_URL = u'https://graph.facebook.com/{facebook_user_id}/friends?{params}'
+USER_API_URL = u'https://graph.facebook.com/{facebook_user_id}?{params}'
+LOCATION_API_URL = u'https://graph.facebook.com/{location_id}?{query_params}'
+SEARCH_API_URL = u'https://graph.facebook.com/search?{0}'
+USER_PHOTO_API_URL = u'http://graph.facebook.com/{facebook_user_id}/picture?type={pic_type}'
 DEFAULT_METADATA_FIELDS = ('email', 'gender', 'birthday', 'username',
                            'location', 'significant_other', 'timezone',
                            'picture', 'locale', 'currency')
@@ -22,8 +29,7 @@ def get_friends(facebook_user_id, access_token, datatype=None):
         json.
     """
     params = {'access_token': access_token}
-    friends_api_url = urljoin('https://graph.facebook.com/',
-                              '{facebook_user_id}/friends?{params}'.format(
+    friends_api_url = urljoin(FRIENDS_API_URL.format(
                                             facebook_user_id=facebook_user_id,
                                             params=urllib.urlencode(params)))
 
@@ -34,6 +40,7 @@ def get_friends(facebook_user_id, access_token, datatype=None):
     if datatype == 'json':
         return friend_list
 
+    from django_social.facebook.models import FacebookConnection
     fb_connections = []
 
     for friend in friend_list:
@@ -58,8 +65,7 @@ def get_user_metadata(facebook_user_id, access_token, fields=None):
     params = {'access_token': access_token,
               'fields': u','.join(fields)}
 
-    metadata_api_url = urljoin(u'https://graph.facebook.com/',
-                                '{facebook_user_id}?{params}'.format(
+    metadata_api_url = urljoin(USER_API_URL.format(
                                             facebook_user_id=facebook_user_id,
                                             params=urllib.urlencode(params)))
 
@@ -67,9 +73,12 @@ def get_user_metadata(facebook_user_id, access_token, fields=None):
     return user_metadata
 
 
-def get_location_info(location_id):
+def get_location_info(location_id, source=Source.FACEBOOK):
     """
-    Gets location information by facebook location id.
+    Gets location information by location id.
+
+    :param location_id: external source location id of the location.
+    :param source: the source of the information.  (i.e. facebook, etc)
 
     Example facebook response:
 
@@ -94,10 +103,9 @@ def get_location_info(location_id):
     query_params = {'fields': 'location,name,category,phone',
                     'access_token': get_app_access_token()}
 
-    location_api_url = urljoin(u'https://graph.facebook.com/',
-                               '{location_id}?{query_params}'.format(
-                                location_id=location_id,
-                                query_params=urllib.urlencode(query_params)))
+    location_api_url = LOCATION_API_URL.format(
+                                 location_id=location_id,
+                                 query_params=urllib.urlencode(query_params))
 
     location_info = get_json_api_contents(location_api_url)
     location = location_info.get('location', {})
@@ -107,7 +115,7 @@ def get_location_info(location_id):
 
     return Location.objects.get_or_create(
         ext_id=location_info.get('id'),
-        source='FACEBOOK',
+        source=source,
         defaults={
             'name': location_info.get('name'),
             'line1': location.get('street'),
@@ -211,11 +219,26 @@ def search_places(query=None, latitude=None, longitude=None, distance=None,
     if distance:
         query_params['distance'] = distance
 
-    api_url = u'https://graph.facebook.com/search?{0}'.format(urllib.urlencode(query_params))
+    api_url = SEARCH_API_URL.format(urllib.urlencode(query_params))
 
     location_info = get_json_api_contents(api_url)
     places = location_info.get('data', [])
     return places
+
+
+def get_user_photo(facebook_user_id, pic_type='large'):
+        """
+        :param pic_type: should be one of
+            - 'square' (50x50) default
+            - 'small' (50 pixels wide, variable height)
+            - 'normal' (100 pixels wide, variable height), and
+            - 'large' (about 200 pixels wide, variable height):
+
+        Note: This url can be http or https.  Probably want to flex this based
+        on if I'm using SSL or not.
+        """
+        return USER_PHOTO_API_URL.format(facebook_user_id=facebook_user_id,
+                                         pic_type=pic_type)
 
 
 def get_app_access_token():
@@ -229,7 +252,7 @@ def get_app_access_token():
                     'client_secret': settings.FACEBOOK_API_SECRET,
                     'grant_type': 'client_credentials'}
 
-    api_url = 'https://graph.facebook.com/oauth/access_token?{0}'.format(urllib.urlencode(query_params))
+    api_url = APP_ACCESS_TOKEN_API_URL.format(urllib.urlencode(query_params))
 
     access_token = urlopen(api_url).read()
     access_token = access_token.split('=')[1]
