@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.template import Library
-from django_social.connections import FacebookConnection
+from ..facebook.models import FacebookConnection
 
 register = Library()
+
 
 @register.filter
 def fb_avatar_url(facebook_user_id=None):
