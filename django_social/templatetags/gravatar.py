@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-Minor modificationss taken from 
+Minor modificationss taken from
 http://code.google.com/p/django-gravatar/source/browse/trunk/gravatar/templatetags/gravatar.py
 
 Examples:
 
 """
 
+import hashlib
+import urllib
+
 from django import template
 from django.conf import settings
 from django.utils.html import escape
 
-import hashlib
-import urllib
 
 GRAVATAR_URL_PREFIX = getattr(settings, "GRAVATAR_URL_PREFIX", "http://www.gravatar.com/")
 GRAVATAR_DEFAULT_IMAGE = getattr(settings, "GRAVATAR_DEFAULT_IMAGE", "")

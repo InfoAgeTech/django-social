@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-Run from the command line.
 
-$ python manage.py test bb_social
-"""
+import unittest
+
 from django.core.exceptions import ValidationError
 from django_social import Source
 from django_social.facebook.api import get_location_info
 from django_social.facebook.api import search_places
-import unittest
 
 
 class SocialTestCase(unittest.TestCase):

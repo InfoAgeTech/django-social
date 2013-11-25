@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
+import urllib
+from urllib2 import urlopen
+from urlparse import urljoin
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django_geo.models import Location
 from django_social import Source
 from python_tools.api import get_json_api_contents
-from urllib2 import urlopen
-from urlparse import urljoin
-import urllib
+
 
 APP_ACCESS_TOKEN_API_URL = u'https://graph.facebook.com/oauth/access_token?{0}'
 FRIENDS_API_URL = u'https://graph.facebook.com/{facebook_user_id}/friends?{params}'

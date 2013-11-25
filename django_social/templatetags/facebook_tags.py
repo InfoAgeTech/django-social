@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.template import Library
+
 from ..facebook.models import FacebookConnection
+
 
 register = Library()
 
