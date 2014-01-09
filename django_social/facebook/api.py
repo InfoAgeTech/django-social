@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import urllib
-from urllib2 import urlopen
-from urlparse import urljoin
+from urllib.parse import urlencode
+from urllib.parse import urljoin
+from urllib.request import urlopen
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -33,7 +33,7 @@ def get_friends(facebook_user_id, access_token, datatype=None):
     params = {'access_token': access_token}
     friends_api_url = urljoin(FRIENDS_API_URL.format(
                                             facebook_user_id=facebook_user_id,
-                                            params=urllib.urlencode(params)))
+                                            params=urlencode(params)))
 
     connections = get_json_api_contents(friends_api_url)
     friend_list = connections.get('data', [])
@@ -69,7 +69,7 @@ def get_user_metadata(facebook_user_id, access_token, fields=None):
 
     metadata_api_url = urljoin(USER_API_URL.format(
                                             facebook_user_id=facebook_user_id,
-                                            params=urllib.urlencode(params)))
+                                            params=urlencode(params)))
 
     user_metadata = get_json_api_contents(metadata_api_url)
     return user_metadata
@@ -107,7 +107,7 @@ def get_location_info(location_id, source=Source.FACEBOOK):
 
     location_api_url = LOCATION_API_URL.format(
                                  location_id=location_id,
-                                 query_params=urllib.urlencode(query_params))
+                                 query_params=urlencode(query_params))
 
     location_info = get_json_api_contents(location_api_url)
     location = location_info.get('location', {})
@@ -221,7 +221,7 @@ def search_places(query=None, latitude=None, longitude=None, distance=None,
     if distance:
         query_params['distance'] = distance
 
-    api_url = SEARCH_API_URL.format(urllib.urlencode(query_params))
+    api_url = SEARCH_API_URL.format(urlencode(query_params))
 
     location_info = get_json_api_contents(api_url)
     places = location_info.get('data', [])
@@ -254,7 +254,7 @@ def get_app_access_token():
                     'client_secret': settings.FACEBOOK_API_SECRET,
                     'grant_type': 'client_credentials'}
 
-    api_url = APP_ACCESS_TOKEN_API_URL.format(urllib.urlencode(query_params))
+    api_url = APP_ACCESS_TOKEN_API_URL.format(urlencode(query_params))
 
     access_token = urlopen(api_url).read()
     access_token = access_token.split('=')[1]
