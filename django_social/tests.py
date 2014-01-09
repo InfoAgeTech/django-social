@@ -16,17 +16,17 @@ class SocialTestCase(unittest.TestCase):
         """
         location = get_location_info(location_id=120491747748)
 
-        self.assertEquals(location.name, 'The Classic Cup')
-        self.assertEquals(location.category, 'Restaurant/cafe')
-        self.assertEquals(location.country, 'United States')
+        self.assertEqual(location.name, 'The Classic Cup')
+        self.assertEqual(location.category, 'Restaurant/cafe')
+        self.assertEqual(location.country, 'United States')
         self.assertEqual(location.latlong, (39.042173020445, -94.590903251913))
-        self.assertEquals(location.line1, '301 W. 47th Street')
-        self.assertEquals(location.line2, None)
-        self.assertEquals(location.locality, 'Kansas City')
-        self.assertEquals(location.phone, '816-753-1840')
-        self.assertEquals(location.postal_code, '64112')
-        self.assertEquals(location.source, Source.FACEBOOK)
-        self.assertEquals(location.subdivision, 'MO')
+        self.assertEqual(location.line1, '301 W. 47th Street')
+        self.assertEqual(location.line2, None)
+        self.assertEqual(location.locality, 'Kansas City')
+        self.assertEqual(location.phone, '816-753-1840')
+        self.assertEqual(location.postal_code, '64112')
+        self.assertEqual(location.source, Source.FACEBOOK)
+        self.assertEqual(location.subdivision, 'MO')
 
     def test_places_search(self):
         """
@@ -34,7 +34,7 @@ class SocialTestCase(unittest.TestCase):
         """
         with self.assertRaises(ValidationError) as e:
             search_places()
-        self.assertEquals([u'One of the following args must be provided: query, latitude and longitude, or distance.'],
+        self.assertEqual([u'One of the following args must be provided: query, latitude and longitude, or distance.'],
                           e.exception.messages)
 
         # Sometimes facebook gives back incorrect page sizes.  If I ask for 6,
