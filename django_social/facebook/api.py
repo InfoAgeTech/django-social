@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from urllib.parse import urlencode
 from urllib.parse import urljoin
 from urllib.request import urlopen
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.utils.http import urlencode
 from django_geo.models import Location
 from django_social import Source
 from python_tools.api import get_json_api_contents
