@@ -1,6 +1,7 @@
-# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from django_core.utils.api import get_json_api_contents
 from python_dates.parsers import parse_datetime
-from python_tools.api import get_json_api_contents
 
 
 def get_bookmarks(delicious_username, tag=None):

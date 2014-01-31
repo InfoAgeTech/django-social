@@ -6,9 +6,9 @@ from urllib.request import urlopen
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.http import urlencode
+from django_core.utils.api import get_json_api_contents
 from django_geo.models import Location
 from django_social import Source
-from python_tools.api import get_json_api_contents
 
 
 APP_ACCESS_TOKEN_API_URL = u'https://graph.facebook.com/oauth/access_token?{0}'
