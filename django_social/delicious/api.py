@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django_core.utils.api import get_json_api_contents
-from python_dates.parsers import parse_datetime
+from django_core.utils.date_parsers import parse_datetime
 
 
 def get_bookmarks(delicious_username, tag=None):
