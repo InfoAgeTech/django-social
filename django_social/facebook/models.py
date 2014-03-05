@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django_social.facebook.api import get_user_photo
 
 
