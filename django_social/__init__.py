@@ -8,10 +8,12 @@ class Source(object):
     PICASA = 'PICASA'
     TWITTER = 'TWITTER'
     YOUTUBE = 'YOUTUBE'
+    SOUNDCLOUD = 'SOUNDCLOUD'
     CHOICES = ((DELICIOUS, 'Delicious'),
                (FACEBOOK, 'Facebook'),
                (INSTAGRAM, 'Instagram'),
                (PICASA, 'Picasa'),
+               (SOUNDCLOUD, 'SoundCloud'),
                (TWITTER, 'Twitter'),
                (YOUTUBE, 'YouTube')
                )
