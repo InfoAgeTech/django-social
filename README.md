@@ -1,4 +1,4 @@
-**IMPORTANT**: Not stable, don't clone.  Ths repo will likely be deleted.
+**IMPORTANT**: Not stable, don't clone.  This repo will likely be deleted.
 
 django-social
 =============
